@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>llms.txt Generator</title>
+<meta name="description" content="Generate a spec-compliant llms.txt file for your site. Helps AI engines like ChatGPT, Claude, Perplexity, and Gemini index your content. Browser-only, no signup.">
+<meta property="og:title" content="llms.txt Generator">
+<meta property="og:description" content="Build a spec-compliant llms.txt for AI engine discovery. ChatGPT, Claude, Perplexity, Gemini. Browser-only, no signup.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://0xelitesystem.github.io/llms-txt-generator/og.png">
+<meta property="og:url" content="https://0xelitesystem.github.io/llms-txt-generator/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="llms.txt Generator">
+<meta name="twitter:description" content="Build a spec-compliant llms.txt for AI engine discovery.">
+<meta name="twitter:image" content="https://0xelitesystem.github.io/llms-txt-generator/og.png">
+<style>
+:root {
+  --bg: #f4ead5;
+  --bg-card: #fbf5e6;
+  --bg-input: #ffffff;
+  --ink: #2d1e0f;
+  --ink-soft: #5a4831;
+  --ink-faint: #8a7556;
+  --rule: #d4c4a0;
+  --accent: #a83232;
+  --accent-soft: #c45656;
+  --good: #3a6b3a;
+  --warn: #8a5a1a;
+  --bad: #a83232;
+  --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --serif: 'Marcellus', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+}
+[data-theme="dark"] {
+  --bg: #1a140c;
+  --bg-card: #221a10;
+  --bg-input: #2a2014;
+  --ink: #e8d9b8;
+  --ink-soft: #b8a888;
+  --ink-faint: #8a7a5c;
+  --rule: #3d3020;
+  --accent: #d97070;
+  --accent-soft: #c45656;
+  --good: #7ab87a;
+  --warn: #d4a548;
+  --bad: #d97070;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding: 32px 28px 80px; }
+header {
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand h1 {
+  font-family: var(--serif);
+  font-size: 38px;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.brand .sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.theme-toggle {
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  color: var(--ink);
+  padding: 7px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+@media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 24px;
+}
+.card h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 0 0 18px 0;
+  color: var(--ink);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.field input, .field textarea {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  border-radius: 3px;
+}
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field .hint { font-size: 11px; color: var(--ink-faint); margin-top: 4px; font-style: italic; }
+.section {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: var(--bg-input);
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.section-head input {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: normal;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--rule);
+  color: var(--ink);
+  padding: 4px 0;
+  flex: 1;
+  margin-right: 12px;
+}
+.section-head input:focus { outline: none; border-bottom-color: var(--accent); }
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  width: 28px;
+  height: 28px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+.link-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 28px;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: start;
+}
+.link-row input, .link-row textarea {
+  width: 100%;
+  font-size: 13px;
+  padding: 6px 9px;
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  border-radius: 3px;
+  font-family: var(--sans);
+}
+.link-row textarea { resize: vertical; min-height: 32px; }
+.link-row input::placeholder, .link-row textarea::placeholder { color: var(--ink-faint); font-style: italic; }
+.add-btn {
+  background: transparent;
+  border: 1px dashed var(--rule);
+  color: var(--ink-soft);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.add-btn:hover { border-style: solid; border-color: var(--accent); color: var(--accent); }
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 10px 18px;
+  border: 1.5px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  cursor: pointer;
+  border-radius: 3px;
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.secondary { background: transparent; color: var(--ink); }
+.btn.secondary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.preview {
+  background: var(--bg-input);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 560px;
+  overflow-y: auto;
+  color: var(--ink);
+}
+.validations { margin-top: 16px; padding: 14px; background: var(--bg-input); border: 1px solid var(--rule); border-radius: 3px; }
+.validations h3 {
+  font-size: 11px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 10px 0;
+  color: var(--ink-soft);
+}
+.val-item {
+  font-size: 12px;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.val-item .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.val-item.good .dot { background: var(--good); }
+.val-item.warn .dot { background: var(--warn); }
+.val-item.bad .dot { background: var(--bad); }
+.val-item.good { color: var(--good); }
+.val-item.warn { color: var(--warn); }
+.val-item.bad { color: var(--bad); }
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.tab-row { display: flex; gap: 4px; margin-bottom: 14px; }
+.tab {
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-bottom: none;
+  padding: 8px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-radius: 3px 3px 0 0;
+}
+.tab.active { background: var(--bg-input); color: var(--ink); border-color: var(--ink); }
+footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+.note {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  padding: 14px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+.note strong { color: var(--ink); }
+</style>
+</head>
+<body data-theme="light">
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>llms.txt Generator</h1>
+      <div class="sub">A cartographic index for AI engines</div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle">Dark mode</button>
+  </header>
+
+  <div class="note">
+    <strong>What is llms.txt?</strong> A markdown file at the root of your site that gives AI engines (ChatGPT, Claude, Perplexity, Gemini) a curated map of the most important pages. Place at <code>/llms.txt</code> alongside <code>/robots.txt</code> and <code>/sitemap.xml</code>.
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1. Site identity</h2>
+      <div class="field">
+        <label for="site-name">Brand or site name</label>
+        <input type="text" id="site-name" placeholder="Acme Tools" value="">
+      </div>
+      <div class="field">
+        <label for="site-tagline">One-line description (blockquote)</label>
+        <input type="text" id="site-tagline" placeholder="Browser-only developer tools for indie SaaS builders." value="">
+      </div>
+      <div class="field">
+        <label for="site-prose">Brand paragraph (2 to 4 sentences)</label>
+        <textarea id="site-prose" placeholder="Explain who the brand serves, what problem it solves, and what makes it different. Use specific nouns and concrete claims, not adjectives."></textarea>
+        <div class="hint">Specific nouns. Concrete claims. No "innovative" or "leading".</div>
+      </div>
+
+      <h2 style="margin-top: 28px;">2. Sections and links</h2>
+      <div id="sections-container"></div>
+      <button class="add-btn" id="add-section">+ Add section</button>
+    </div>
+
+    <div class="card">
+      <h2>3. Output</h2>
+      <div class="tab-row">
+        <button class="tab active" data-target="preview-basic">llms.txt</button>
+        <button class="tab" data-target="preview-full">llms-full.txt notes</button>
+      </div>
+      <div id="preview-basic" class="preview"></div>
+      <div id="preview-full" class="preview" style="display:none;"></div>
+
+      <div class="validations" id="validations">
+        <h3>Validation</h3>
+        <div id="val-list"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="copy-btn">Copy llms.txt</button>
+        <button class="btn secondary" id="download-btn">Download llms.txt</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Built by <a href="https://github.com/0xelitesystem" target="_blank" rel="noopener">0xelitesystem</a>. Pairs with <a href="https://github.com/0xelitesystem/robots-txt-ai-builder" target="_blank" rel="noopener">robots-txt-ai-builder</a>, <a href="https://github.com/0xelitesystem/schema-markup-generator" target="_blank" rel="noopener">schema-markup-generator</a>, and <a href="https://github.com/0xelitesystem/ai-citability-scorer" target="_blank" rel="noopener">ai-citability-scorer</a>.
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const DEFAULT_SECTIONS = [
+  { title: 'Core pages', links: [
+    { url: '', title: '', desc: '' }
+  ]},
+  { title: 'Tools', links: [
+    { url: '', title: '', desc: '' }
+  ]},
+  { title: 'Reference', links: [
+    { url: '', title: '', desc: '' }
+  ]}
+];
+
+let state = {
+  siteName: '',
+  tagline: '',
+  prose: '',
+  sections: JSON.parse(JSON.stringify(DEFAULT_SECTIONS))
+};
+
+const $ = (id) => document.getElementById(id);
+
+function renderSections() {
+  const container = $('sections-container');
+  container.innerHTML = '';
+  state.sections.forEach((sec, sIdx) => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.innerHTML = `
+      <div class="section-head">
+        <input type="text" data-action="rename-section" data-sidx="${sIdx}" value="${escapeAttr(sec.title)}" placeholder="Section title">
+        <button class="btn-icon" data-action="remove-section" data-sidx="${sIdx}" title="Remove section">x</button>
+      </div>
+      <div data-links-for="${sIdx}"></div>
+      <button class="add-btn" data-action="add-link" data-sidx="${sIdx}">+ Add link</button>
+    `;
+    container.appendChild(div);
+
+    const linksDiv = div.querySelector(`[data-links-for="${sIdx}"]`);
+    sec.links.forEach((link, lIdx) => {
+      const row = document.createElement('div');
+      row.className = 'link-row';
+      row.innerHTML = `
+        <input type="text" data-action="edit-link" data-sidx="${sIdx}" data-lidx="${lIdx}" data-field="title" value="${escapeAttr(link.title)}" placeholder="Page title">
+        <input type="url" data-action="edit-link" data-sidx="${sIdx}" data-lidx="${lIdx}" data-field="url" value="${escapeAttr(link.url)}" placeholder="https://example.com/page">
+        <button class="btn-icon" data-action="remove-link" data-sidx="${sIdx}" data-lidx="${lIdx}" title="Remove link">x</button>
+      `;
+      linksDiv.appendChild(row);
+      const descRow = document.createElement('div');
+      descRow.className = 'link-row';
+      descRow.style.gridTemplateColumns = '1fr';
+      descRow.innerHTML = `<textarea data-action="edit-link" data-sidx="${sIdx}" data-lidx="${lIdx}" data-field="desc" placeholder="Specific description of what this page answers (avoid generic words like 'docs' or 'blog')">${escapeAttr(link.desc)}</textarea>`;
+      linksDiv.appendChild(descRow);
+    });
+  });
+}
+
+function escapeAttr(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function generateLlmsTxt() {
+  const lines = [];
+  if (state.siteName) lines.push(`# ${state.siteName}`);
+  if (state.tagline) lines.push('', `> ${state.tagline}`);
+  if (state.prose) lines.push('', state.prose);
+  state.sections.forEach(sec => {
+    if (!sec.title || sec.links.length === 0) return;
+    const validLinks = sec.links.filter(l => l.url && l.title);
+    if (validLinks.length === 0) return;
+    lines.push('', `## ${sec.title}`, '');
+    validLinks.forEach(l => {
+      const descPart = l.desc ? `: ${l.desc}` : '';
+      lines.push(`- [${l.title}](${l.url})${descPart}`);
+    });
+  });
+  return lines.join('\n');
+}
+
+function generateFullNotes() {
+  const notes = [];
+  notes.push('# llms-full.txt build notes', '');
+  notes.push('llms-full.txt is the optional companion to llms.txt.', '');
+  notes.push('It concatenates the full markdown content of every key page into a single file');
+  notes.push('so AI engines that fetch only one file get the entire site context.', '');
+  notes.push('## How to build it', '');
+  notes.push('1. For each link in your llms.txt, fetch the page as plain text or markdown.');
+  notes.push('2. Strip navigation, ads, footers, repeated boilerplate.');
+  notes.push('3. Add a header line above each page: `## [Page Title](URL)`.');
+  notes.push('4. Concatenate everything in the same order as llms.txt sections.');
+  notes.push('5. Save as `/llms-full.txt` at site root.', '');
+  notes.push('## Suggested pages from your llms.txt');
+  notes.push('');
+  state.sections.forEach(sec => {
+    sec.links.forEach(l => {
+      if (l.url && l.title) notes.push(`- ${l.url} (${l.title})`);
+    });
+  });
+  notes.push('', '## Tooling');
+  notes.push('');
+  notes.push('Most static site generators can export page markdown directly.');
+  notes.push('For WordPress, use the REST API: GET /wp-json/wp/v2/pages?per_page=100');
+  notes.push('For sites with no API, run a wget mirror and convert HTML to markdown with pandoc.');
+  return notes.join('\n');
+}
+
+function validate() {
+  const issues = [];
+  if (!state.siteName) issues.push({ level: 'bad', msg: 'Missing site name (H1)' });
+  if (!state.tagline) issues.push({ level: 'bad', msg: 'Missing blockquote tagline' });
+  else if (state.tagline.length > 140) issues.push({ level: 'warn', msg: 'Tagline is over 140 characters; AI engines may truncate' });
+
+  if (!state.prose) issues.push({ level: 'warn', msg: 'Missing brand paragraph (recommended)' });
+  else {
+    const sentences = state.prose.split(/[.!?]+/).filter(s => s.trim().length > 5).length;
+    if (sentences < 2) issues.push({ level: 'warn', msg: 'Brand paragraph is under 2 sentences' });
+    if (sentences > 6) issues.push({ level: 'warn', msg: 'Brand paragraph is over 6 sentences; AI may not extract cleanly' });
+  }
+
+  const validSections = state.sections.filter(s => s.title && s.links.some(l => l.url && l.title));
+  if (validSections.length === 0) issues.push({ level: 'bad', msg: 'No sections with valid links' });
+  if (validSections.length > 0 && validSections.length < 2) issues.push({ level: 'warn', msg: 'Consider grouping into at least 2 sections by intent' });
+
+  let totalLinks = 0;
+  let genericDescCount = 0;
+  let missingDescCount = 0;
+  let nonHttpsCount = 0;
+  const genericWords = /^(docs?|blog|home|page|about|info|read more|click here|learn more)$/i;
+
+  state.sections.forEach(sec => {
+    sec.links.forEach(l => {
+      if (l.url && l.title) {
+        totalLinks++;
+        if (!l.desc) missingDescCount++;
+        else if (genericWords.test(l.desc.trim()) || l.desc.length < 20) genericDescCount++;
+        if (l.url && !/^https:\/\//.test(l.url)) nonHttpsCount++;
+      }
+    });
+  });
+
+  if (totalLinks > 0 && missingDescCount > 0) issues.push({ level: 'warn', msg: `${missingDescCount} link(s) missing descriptions` });
+  if (genericDescCount > 0) issues.push({ level: 'warn', msg: `${genericDescCount} link description(s) too short or generic` });
+  if (nonHttpsCount > 0) issues.push({ level: 'bad', msg: `${nonHttpsCount} link(s) are not absolute https URLs` });
+  if (totalLinks > 0 && issues.length === 0) issues.push({ level: 'good', msg: 'All checks passed' });
+  if (totalLinks === 0 && issues.length === 0) issues.push({ level: 'warn', msg: 'No links yet' });
+
+  return issues;
+}
+
+function renderValidations() {
+  const list = $('val-list');
+  const issues = validate();
+  list.innerHTML = issues.map(i => `<div class="val-item ${i.level}"><span class="dot"></span><span>${escapeAttr(i.msg)}</span></div>`).join('');
+}
+
+function renderPreview() {
+  $('preview-basic').textContent = generateLlmsTxt() || '(your llms.txt will appear here as you type)';
+  $('preview-full').textContent = generateFullNotes();
+  renderValidations();
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.id === 'site-name') state.siteName = t.value;
+  else if (t.id === 'site-tagline') state.tagline = t.value;
+  else if (t.id === 'site-prose') state.prose = t.value;
+  else if (t.dataset.action === 'rename-section') {
+    const sidx = parseInt(t.dataset.sidx, 10);
+    state.sections[sidx].title = t.value;
+  } else if (t.dataset.action === 'edit-link') {
+    const sidx = parseInt(t.dataset.sidx, 10);
+    const lidx = parseInt(t.dataset.lidx, 10);
+    state.sections[sidx].links[lidx][t.dataset.field] = t.value;
+  }
+  renderPreview();
+});
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-action]');
+  if (!t) return;
+  const action = t.dataset.action;
+  const sidx = parseInt(t.dataset.sidx, 10);
+  const lidx = parseInt(t.dataset.lidx, 10);
+  if (action === 'remove-section') {
+    state.sections.splice(sidx, 1);
+    renderSections();
+    renderPreview();
+  } else if (action === 'add-link') {
+    state.sections[sidx].links.push({ url: '', title: '', desc: '' });
+    renderSections();
+    renderPreview();
+  } else if (action === 'remove-link') {
+    state.sections[sidx].links.splice(lidx, 1);
+    renderSections();
+    renderPreview();
+  }
+});
+
+$('add-section').addEventListener('click', () => {
+  state.sections.push({ title: 'New section', links: [{ url: '', title: '', desc: '' }] });
+  renderSections();
+  renderPreview();
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $('preview-basic').style.display = 'none';
+    $('preview-full').style.display = 'none';
+    $(tab.dataset.target).style.display = 'block';
+  });
+});
+
+$('copy-btn').addEventListener('click', async () => {
+  const txt = generateLlmsTxt();
+  if (!txt) { showToast('Nothing to copy yet'); return; }
+  try {
+    await navigator.clipboard.writeText(txt);
+    showToast('Copied to clipboard');
+  } catch (err) {
+    showToast('Copy failed; select and copy manually');
+  }
+});
+
+$('download-btn').addEventListener('click', () => {
+  const txt = generateLlmsTxt();
+  if (!txt) { showToast('Nothing to download yet'); return; }
+  const blob = new Blob([txt], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'llms.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Downloaded llms.txt');
+});
+
+$('theme-toggle').addEventListener('click', () => {
+  const cur = document.body.dataset.theme;
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.dataset.theme = next;
+  $('theme-toggle').textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+});
+
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.body.dataset.theme = 'dark';
+  $('theme-toggle').textContent = 'Light mode';
+}
+
+renderSections();
+renderPreview();
+</script>
+</body>
+</html>
