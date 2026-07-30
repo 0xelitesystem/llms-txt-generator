@@ -53,6 +53,10 @@ The second tab generates build notes for `llms-full.txt`, an optional companion 
 - [ai-citability-scorer](https://github.com/0xelitesystem/ai-citability-scorer): score individual pages for AI citation likelihood
 - [e-e-a-t-auditor](https://github.com/0xelitesystem/e-e-a-t-auditor): audit any page for E-E-A-T signals
 
+## More
+
+Part of a catalog of single-file browser tools and plain-language references, all MIT licensed and dependency-free: [0xelitesystem.github.io](https://0xelitesystem.github.io/). Built by [elitesystem.ai](https://elitesystem.ai).
+
 ## License
 
 MIT. Free to use, fork, modify, and ship.
