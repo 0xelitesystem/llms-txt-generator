@@ -38,7 +38,7 @@
   --bg-input: #2a2014;
   --ink: #e8d9b8;
   --ink-soft: #b8a888;
-  --ink-faint: #8a7a5c;
+  --ink-faint: #96886d;
   --rule: #3d3020;
   --accent: #d97070;
   --accent-soft: #c45656;
@@ -335,7 +335,7 @@ footer a:hover { text-decoration: underline; }
   --bg-input: #111110;
   --good: #7ddc7d;
   --ink: #e8e8e3;
-  --ink-faint: #6e6e68;
+  --ink-faint: #898983;
   --ink-soft: #a8a8a3;
   --rule: #1f1f1d;
   --warn: #ffb454;
@@ -691,11 +691,8 @@ renderPreview();
 (function () {
   var KEY = "theme";
   var btn = document.querySelector("#theme-toggle, #theme-btn, .theme-btn, .theme-toggle, [data-theme-toggle]");
-  function host() {
-    if (document.documentElement.hasAttribute("data-theme")) { return document.documentElement; }
-    if (document.body && document.body.hasAttribute("data-theme")) { return document.body; }
-    return document.documentElement;
-  }
+  // This page's own toggle switches <body> while <html> keeps a fixed brand theme, so remember <body>.
+  function host() { return document.body || document.documentElement; }
   function current() { return host().getAttribute("data-theme") || ""; }
   function setter() {
     if (typeof setTheme === "function") { return setTheme; }
