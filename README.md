@@ -10,7 +10,7 @@ Generate a spec-compliant `llms.txt` for your site. Browser-only, no signup, no 
 
 A markdown file at the root of your site (`/llms.txt`) that gives AI engines a curated map of the most important pages. ChatGPT, Claude, Perplexity, and Gemini look for it when deciding what to cite. Separate from `sitemap.xml`, which lists every page; `llms.txt` is your editorial selection of what AI should index first.
 
-## Use it
+## Use
 
 Open `index.html` in any browser. Or visit the hosted version at `https://0xelitesystem.github.io/llms-txt-generator/`.
 
@@ -19,6 +19,10 @@ Open `index.html` in any browser. Or visit the hosted version at `https://0xelit
 3. Add links per section with specific descriptions of what each page answers.
 4. Copy or download the generated file.
 5. Upload to your web root so it serves at `https://yoursite.com/llms.txt`.
+
+## Why this exists
+
+An `llms.txt` file is hand-written markdown with a specific shape, and it is easy to get subtly wrong: a missing tagline, relative links, link descriptions that say nothing. This form builds the file and validates it as you type. It is one HTML file that runs in your browser, with no signup, no tracking and no server, under the MIT license.
 
 ## What it checks for
 
@@ -52,6 +56,23 @@ The second tab generates build notes for `llms-full.txt`, an optional companion 
 - [schema-markup-generator](https://github.com/0xelitesystem/schema-markup-generator): JSON-LD schema for the pages you list
 - [ai-citability-scorer](https://github.com/0xelitesystem/ai-citability-scorer): score individual pages for AI citation likelihood
 - [e-e-a-t-auditor](https://github.com/0xelitesystem/e-e-a-t-auditor): audit any page for E-E-A-T signals
+
+## Privacy
+
+Everything runs in your browser. The brand name, tagline, sections and links you enter are never sent anywhere, and the page makes no network requests. Your llms.txt content is not saved, so refreshing the page clears it. The only thing written to storage is your light or dark theme choice, saved in `localStorage` under the key `theme`. **Download llms.txt** saves the file to your machine through the browser; nothing is uploaded.
+
+## Run locally
+
+```bash
+git clone https://github.com/0xelitesystem/llms-txt-generator
+cd llms-txt-generator
+```
+
+Open `index.html` in any modern browser. Or serve the folder with `python -m http.server 8000` and visit http://localhost:8000/.
+
+## Build
+
+No build step. The whole tool is one `index.html` file with its CSS and JavaScript inline, and nothing to install.
 
 ## More
 
